@@ -1,0 +1,13 @@
+# Claude Code files and directories
+.claude/
+.claude_code/
+claude_code/
+.claude_cache/
+
+# Claude Code session files
+*.claude_session
+.claude_session
+
+# Claude Code output and logs
+claude_output/
+.claude_output/
