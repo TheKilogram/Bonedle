@@ -1,0 +1,194 @@
+@page "/archive"
+@using Bonedle.Client.Models
+@using Bonedle.Client.Services
+@inject IDailyPuzzleService DailyPuzzleService
+@inject IStorageService StorageService
+@inject NavigationManager Navigation
+
+<div class="archive-page">
+    <header class="archive-header">
+        <a href="/" class="back-btn">← Back</a>
+        <h1>Past Puzzles</h1>
+    </header>
+
+    <div class="archive-content">
+        <div class="mode-selector">
+            <button class="@(SelectedMode == GameMode.Location ? "active" : "")"
+                    @onclick="() => SelectedMode = GameMode.Location">
+                Location Mode
+            </button>
+            <button class="@(SelectedMode == GameMode.Name ? "active" : "")"
+                    @onclick="() => SelectedMode = GameMode.Name">
+                Name Mode
+            </button>
+        </div>
+
+        <div class="difficulty-selector">
+            <button class="@(SelectedDifficulty == DifficultyLevel.Major ? "active" : "")"
+                    @onclick="() => SelectedDifficulty = DifficultyLevel.Major">
+                Major Bones
+            </button>
+            <button class="@(SelectedDifficulty == DifficultyLevel.Full ? "active" : "")"
+                    @onclick="() => SelectedDifficulty = DifficultyLevel.Full">
+                Full Skeleton
+            </button>
+        </div>
+
+        <div class="calendar">
+            <div class="calendar-header">
+                <button @onclick="PreviousMonth" class="nav-btn">←</button>
+                <span class="month-year">@CurrentMonth.ToString("MMMM yyyy")</span>
+                <button @onclick="NextMonth" class="nav-btn" disabled="@IsCurrentMonth">→</button>
+            </div>
+
+            <div class="calendar-grid">
+                <div class="day-header">Sun</div>
+                <div class="day-header">Mon</div>
+                <div class="day-header">Tue</div>
+                <div class="day-header">Wed</div>
+                <div class="day-header">Thu</div>
+                <div class="day-header">Fri</div>
+                <div class="day-header">Sat</div>
+
+                @foreach (var day in CalendarDays)
+                {
+                    @if (day == null)
+                    {
+                        <div class="day empty"></div>
+                    }
+                    else
+                    {
+                        var dateStr = day.Value.ToString("yyyy-MM-dd");
+                        var isToday = day.Value.Date == DateTime.UtcNow.Date;
+                        var isFuture = day.Value.Date > DateTime.UtcNow.Date;
+                        var isBeforeLaunch = day.Value.Date < LaunchDate;
+                        var puzzleState = GetPuzzleState(dateStr);
+
+                        <div class="day @(isToday ? "today" : "") @(isFuture || isBeforeLaunch ? "disabled" : "") @puzzleState"
+                             @onclick="() => PlayDate(dateStr, isFuture, isBeforeLaunch)">
+                            <span class="day-number">@day.Value.Day</span>
+                            @if (!isFuture && !isBeforeLaunch)
+                            {
+                                <span class="day-status">
+                                    @(puzzleState switch
+                                    {
+                                        "won" => "✓",
+                                        "lost" => "✗",
+                                        "played" => "•",
+                                        _ => ""
+                                    })
+                                </span>
+                            }
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <div class="legend">
+            <span class="legend-item"><span class="dot won"></span> Won</span>
+            <span class="legend-item"><span class="dot lost"></span> Lost</span>
+            <span class="legend-item"><span class="dot played"></span> In Progress</span>
+        </div>
+    </div>
+</div>
+
+@code {
+    private GameMode SelectedMode { get; set; } = GameMode.Location;
+    private DifficultyLevel SelectedDifficulty { get; set; } = DifficultyLevel.Major;
+    private DateTime CurrentMonth { get; set; } = DateTime.UtcNow;
+    private static readonly DateTime LaunchDate = new(2026, 1, 18);
+    private Dictionary<string, GameState?> CachedStates { get; set; } = new();
+
+    private bool IsCurrentMonth => CurrentMonth.Year == DateTime.UtcNow.Year &&
+                                   CurrentMonth.Month == DateTime.UtcNow.Month;
+
+    private List<DateTime?> CalendarDays
+    {
+        get
+        {
+            var days = new List<DateTime?>();
+            var firstDay = new DateTime(CurrentMonth.Year, CurrentMonth.Month, 1);
+            var daysInMonth = DateTime.DaysInMonth(CurrentMonth.Year, CurrentMonth.Month);
+
+            // Add empty days for padding
+            var firstDayOfWeek = (int)firstDay.DayOfWeek;
+            for (int i = 0; i < firstDayOfWeek; i++)
+            {
+                days.Add(null);
+            }
+
+            // Add actual days
+            for (int i = 1; i <= daysInMonth; i++)
+            {
+                days.Add(new DateTime(CurrentMonth.Year, CurrentMonth.Month, i));
+            }
+
+            return days;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMonthStates();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadMonthStates();
+    }
+
+    private async Task LoadMonthStates()
+    {
+        CachedStates.Clear();
+        var daysInMonth = DateTime.DaysInMonth(CurrentMonth.Year, CurrentMonth.Month);
+
+        for (int i = 1; i <= daysInMonth; i++)
+        {
+            var date = new DateTime(CurrentMonth.Year, CurrentMonth.Month, i);
+            var dateStr = date.ToString("yyyy-MM-dd");
+
+            if (date.Date <= DateTime.UtcNow.Date && date.Date >= LaunchDate)
+            {
+                var state = await StorageService.GetGameStateAsync(SelectedMode, SelectedDifficulty, dateStr);
+                CachedStates[dateStr] = state;
+            }
+        }
+    }
+
+    private string GetPuzzleState(string dateStr)
+    {
+        if (!CachedStates.TryGetValue(dateStr, out var state) || state == null)
+            return "";
+
+        if (state.Completed)
+            return state.Won ? "won" : "lost";
+
+        return state.Guesses.Any() ? "played" : "";
+    }
+
+    private void PlayDate(string dateStr, bool isFuture, bool isBeforeLaunch)
+    {
+        if (isFuture || isBeforeLaunch)
+            return;
+
+        var route = SelectedMode == GameMode.Location ? "/location" : "/name";
+        var diffParam = SelectedDifficulty == DifficultyLevel.Full ? "full" : "major";
+        Navigation.NavigateTo($"{route}?difficulty={diffParam}&date={dateStr}");
+    }
+
+    private async Task PreviousMonth()
+    {
+        CurrentMonth = CurrentMonth.AddMonths(-1);
+        await LoadMonthStates();
+    }
+
+    private async Task NextMonth()
+    {
+        if (!IsCurrentMonth)
+        {
+            CurrentMonth = CurrentMonth.AddMonths(1);
+            await LoadMonthStates();
+        }
+    }
+}

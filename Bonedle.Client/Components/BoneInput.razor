@@ -1,0 +1,117 @@
+@using Bonedle.Client.Models
+@using Bonedle.Client.Services
+@inject IBoneDataService BoneDataService
+
+<div class="bone-input-container">
+    <div class="input-wrapper">
+        <input type="text"
+               @bind="InputValue"
+               @bind:event="oninput"
+               @onkeydown="HandleKeyDown"
+               @onfocus="() => ShowSuggestions = true"
+               placeholder="Type a bone name..."
+               disabled="@Disabled"
+               class="bone-input" />
+        <button @onclick="SubmitGuess" disabled="@(Disabled || string.IsNullOrWhiteSpace(InputValue))" class="submit-btn">
+            Guess
+        </button>
+    </div>
+
+    @if (ShowSuggestions && Suggestions.Any())
+    {
+        <div class="suggestions">
+            @foreach (var (suggestion, index) in Suggestions.Select((s, i) => (s, i)))
+            {
+                <div class="suggestion @(index == SelectedIndex ? "selected" : "")"
+                     @onclick="() => SelectSuggestion(suggestion)">
+                    @suggestion
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public DifficultyLevel Difficulty { get; set; }
+    [Parameter] public EventCallback<string> OnGuess { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public List<string> ExcludedBones { get; set; } = new();
+
+    private string InputValue { get; set; } = "";
+    private List<string> Suggestions { get; set; } = new();
+    private bool ShowSuggestions { get; set; }
+    private int SelectedIndex { get; set; } = -1;
+
+    protected override void OnParametersSet()
+    {
+        UpdateSuggestions();
+    }
+
+    private void UpdateSuggestions()
+    {
+        if (string.IsNullOrWhiteSpace(InputValue))
+        {
+            Suggestions = new List<string>();
+            return;
+        }
+
+        Suggestions = BoneDataService.SearchBones(InputValue, Difficulty)
+            .Where(name => !ExcludedBones.Contains(name))
+            .Take(6)
+            .ToList();
+
+        SelectedIndex = Suggestions.Any() ? 0 : -1;
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        switch (e.Key)
+        {
+            case "ArrowDown":
+                if (Suggestions.Any())
+                {
+                    SelectedIndex = Math.Min(SelectedIndex + 1, Suggestions.Count - 1);
+                }
+                break;
+            case "ArrowUp":
+                if (Suggestions.Any())
+                {
+                    SelectedIndex = Math.Max(SelectedIndex - 1, 0);
+                }
+                break;
+            case "Enter":
+                await SubmitGuess();
+                break;
+            case "Escape":
+                ShowSuggestions = false;
+                break;
+            default:
+                ShowSuggestions = true;
+                UpdateSuggestions();
+                break;
+        }
+    }
+
+    private void SelectSuggestion(string suggestion)
+    {
+        InputValue = suggestion;
+        ShowSuggestions = false;
+        SelectedIndex = -1;
+    }
+
+    private async Task SubmitGuess()
+    {
+        var guess = SelectedIndex >= 0 && SelectedIndex < Suggestions.Count
+            ? Suggestions[SelectedIndex]
+            : InputValue;
+
+        if (string.IsNullOrWhiteSpace(guess))
+            return;
+
+        await OnGuess.InvokeAsync(guess.Trim());
+        InputValue = "";
+        Suggestions = new List<string>();
+        ShowSuggestions = false;
+        SelectedIndex = -1;
+    }
+}

@@ -1,0 +1,51 @@
+@using Bonedle.Client.Models
+
+<div class="hint-display">
+    <div class="hint-header">
+        <h3>Hints</h3>
+        <span class="hint-counter">@RevealedCount / @TotalHintsAvailable</span>
+    </div>
+
+    <div class="hints-list">
+        @for (int i = 0; i < TotalHintsAvailable; i++)
+        {
+            var index = i;
+            var isRevealed = index < RevealedCount;
+            var hint = isRevealed && index < AllHints.Count ? AllHints[index] : null;
+
+            <div class="hint-item @(isRevealed ? "revealed" : "locked")">
+                <span class="hint-number">@(index + 1)</span>
+                @if (isRevealed && hint != null)
+                {
+                    <span class="hint-text">@hint</span>
+                }
+                else if (index == RevealedCount && CanReveal)
+                {
+                    <button class="reveal-hint-btn" @onclick="RevealNextHint">
+                        🔓 Reveal Hint
+                    </button>
+                }
+                else
+                {
+                    <span class="hint-locked">🔒 Locked</span>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public List<string> AllHints { get; set; } = new();
+    [Parameter] public int TotalHintsAvailable { get; set; } = 7;
+    [Parameter] public int RevealedCount { get; set; }
+    [Parameter] public EventCallback<int> OnRevealHint { get; set; }
+    [Parameter] public bool CanReveal { get; set; } = true;
+
+    private async Task RevealNextHint()
+    {
+        if (RevealedCount < TotalHintsAvailable && CanReveal)
+        {
+            await OnRevealHint.InvokeAsync(RevealedCount + 1);
+        }
+    }
+}

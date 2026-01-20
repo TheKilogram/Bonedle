@@ -1,0 +1,35 @@
+@using Bonedle.Client.Models
+
+<div class="name-guess-card @(Guess.IsCorrect ? "correct" : "")">
+    <div class="guess-name-header">@Guess.BoneName</div>
+    <div class="category-grid">
+        <div class="category-cell @GetStatusClass(Guess.CategoryMatch.Status)" title="@Guess.CategoryMatch.CategoryName">
+            <span class="cell-label">Category</span>
+            <span class="cell-value">@Guess.CategoryMatch.GuessValue</span>
+        </div>
+        <div class="category-cell @GetStatusClass(Guess.RegionMatch.Status)" title="@Guess.RegionMatch.CategoryName">
+            <span class="cell-label">Region</span>
+            <span class="cell-value">@Guess.RegionMatch.GuessValue</span>
+        </div>
+        <div class="category-cell @GetStatusClass(Guess.BoneTypeMatch.Status)" title="@Guess.BoneTypeMatch.CategoryName">
+            <span class="cell-label">Type</span>
+            <span class="cell-value">@Guess.BoneTypeMatch.GuessValue</span>
+        </div>
+        <div class="category-cell @GetStatusClass(Guess.CountMatch.Status)" title="@Guess.CountMatch.CategoryName">
+            <span class="cell-label">Count</span>
+            <span class="cell-value">@Guess.CountMatch.GuessValue</span>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public NameGuessResult Guess { get; set; } = null!;
+
+    private string GetStatusClass(MatchStatus status) => status switch
+    {
+        MatchStatus.Correct => "match-correct",
+        MatchStatus.Partial => "match-partial",
+        MatchStatus.Wrong => "match-wrong",
+        _ => "match-wrong"
+    };
+}

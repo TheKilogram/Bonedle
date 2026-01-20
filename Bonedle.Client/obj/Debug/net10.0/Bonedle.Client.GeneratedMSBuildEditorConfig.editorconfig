@@ -1,0 +1,85 @@
+is_global = true
+build_property.EnableAotAnalyzer = 
+build_property.EnableSingleFileAnalyzer = 
+build_property.EnableTrimAnalyzer = false
+build_property.IncludeAllContentForSelfExtract = 
+build_property.VerifyReferenceTrimCompatibility = 
+build_property.VerifyReferenceAotCompatibility = 
+build_property.TargetFramework = net10.0
+build_property.TargetFrameworkIdentifier = .NETCoreApp
+build_property.TargetFrameworkVersion = v10.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = false
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = browser
+build_property.RootNamespace = Bonedle.Client
+build_property.RootNamespace = Bonedle.Client
+build_property.ProjectDir = C:\Users\Kilo\Documents\projects\Bonedle\Bonedle.Client\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = false
+build_property.RazorLangVersion = 9.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Users\Kilo\Documents\projects\Bonedle\Bonedle.Client
+build_property._RazorSourceGeneratorDebug = 
+build_property.EffectiveAnalysisLevelStyle = 10.0
+build_property.EnableCodeStyleSeverity = 
+
+[C:/Users/Kilo/Documents/projects/Bonedle/Bonedle.Client/App.razor]
+build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Kilo/Documents/projects/Bonedle/Bonedle.Client/Components/BoneInput.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xCb25lSW5wdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Kilo/Documents/projects/Bonedle/Bonedle.Client/Components/GuessHistory.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xHdWVzc0hpc3RvcnkucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Kilo/Documents/projects/Bonedle/Bonedle.Client/Components/HintDisplay.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xIaW50RGlzcGxheS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Kilo/Documents/projects/Bonedle/Bonedle.Client/Components/NameGuessCard.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xOYW1lR3Vlc3NDYXJkLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Kilo/Documents/projects/Bonedle/Bonedle.Client/Components/ResultModal.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSZXN1bHRNb2RhbC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Kilo/Documents/projects/Bonedle/Bonedle.Client/Components/SkeletonView.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTa2VsZXRvblZpZXcucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Kilo/Documents/projects/Bonedle/Bonedle.Client/Layout/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = TGF5b3V0XE1haW5MYXlvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Kilo/Documents/projects/Bonedle/Bonedle.Client/Pages/Archive.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQXJjaGl2ZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Kilo/Documents/projects/Bonedle/Bonedle.Client/Pages/Index.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXgucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Kilo/Documents/projects/Bonedle/Bonedle.Client/Pages/LocationMode.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9jYXRpb25Nb2RlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Kilo/Documents/projects/Bonedle/Bonedle.Client/Pages/NameMode.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTmFtZU1vZGUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Kilo/Documents/projects/Bonedle/Bonedle.Client/Pages/NotFound.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTm90Rm91bmQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Kilo/Documents/projects/Bonedle/Bonedle.Client/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 

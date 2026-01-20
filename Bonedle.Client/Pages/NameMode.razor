@@ -1,0 +1,236 @@
+@page "/name"
+@using Bonedle.Client.Models
+@using Bonedle.Client.Services
+@using Bonedle.Client.Components
+@using Microsoft.AspNetCore.WebUtilities
+@inject IGameService GameService
+@inject IBoneDataService BoneDataService
+@inject IDailyPuzzleService DailyPuzzleService
+@inject NavigationManager Navigation
+
+<div class="game-page name-mode @(IsLevelTwo ? "level-two" : "")">
+    <header class="game-header">
+        <a href="/" class="back-btn">← Back</a>
+        <div class="header-center">
+            <h1>BONEDLE</h1>
+            <span class="mode-badge">Name Mode</span>
+            @if (IsLevelTwo)
+            {
+                <span class="level-badge">Level 2</span>
+            }
+        </div>
+        <span class="puzzle-number">#@PuzzleNumber</span>
+    </header>
+
+    <div class="game-content name-layout">
+        <div class="hints-panel">
+            <div class="mystery-bone">
+                <div class="mystery-icon">?</div>
+                <p>What bone is this?</p>
+                <span class="guess-counter">@(GameState?.Guesses.Count ?? 0) / @GameService.MaxGuesses</span>
+            </div>
+
+            <HintDisplay AllHints="@AllHints"
+                         TotalHintsAvailable="7"
+                         RevealedCount="@HintsRevealed"
+                         OnRevealHint="@HandleRevealHint"
+                         CanReveal="@(!GameState?.Completed ?? true)" />
+        </div>
+
+        <div class="controls-panel">
+            <BoneInput Difficulty="@Difficulty"
+                       OnGuess="@HandleGuess"
+                       Disabled="@(GameState?.Completed ?? false)"
+                       ExcludedBones="@GuessedBoneNames" />
+
+            <div class="name-guesses-list">
+                @foreach (var guess in NameGuessResults.AsEnumerable().Reverse())
+                {
+                    <NameGuessCard Guess="@guess" />
+                }
+            </div>
+        </div>
+    </div>
+
+    @if (ShowLevelUp && !IsLevelTwo)
+    {
+        <div class="level-up-overlay">
+            <div class="level-up-modal">
+                <h2>Level 1 Complete!</h2>
+                <p>You identified the <strong>@TargetBoneName</strong>!</p>
+                <p>Ready for Level 2? The full skeleton has 200+ bones!</p>
+                <button class="level-up-btn" @onclick="StartLevelTwo">
+                    Continue to Level 2 →
+                </button>
+                <button class="skip-btn" @onclick="@(() => ShowLevelUp = false)">
+                    View Results
+                </button>
+            </div>
+        </div>
+    }
+
+    <ResultModal IsVisible="@ShowResult"
+                 Won="@(GameState?.Won ?? false)"
+                 GuessCount="@(GameState?.Guesses.Count ?? 0)"
+                 TargetBoneId="@(GameState?.TargetBoneId ?? "")"
+                 Stats="@Stats"
+                 ShowLevelUp="@false"
+                 OnClose="@(() => ShowResult = false)"
+                 OnLevelUp="@(() => {})"
+                 PuzzleNumber="@PuzzleNumber"
+                 ModeName="@(IsLevelTwo ? "Name (Level 2)" : "Name")"
+                 Guesses="@GuessResults" />
+</div>
+
+@code {
+    private GameState? GameState { get; set; }
+    private DifficultyLevel Difficulty { get; set; } = DifficultyLevel.Major;
+    private string? DateOverride { get; set; }
+    private List<GuessResult> GuessResults { get; set; } = new();
+    private List<NameGuessResult> NameGuessResults { get; set; } = new();
+    private List<string> GuessedBoneNames { get; set; } = new();
+    private List<string> AllHints { get; set; } = new();
+    private int HintsRevealed { get; set; }
+    private PlayerStats Stats { get; set; } = new();
+    private bool ShowResult { get; set; }
+    private bool ShowLevelUp { get; set; }
+    private bool IsLevelTwo { get; set; }
+    private int PuzzleNumber { get; set; }
+    private string TargetBoneName { get; set; } = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        ParseQueryParameters();
+        await LoadGame();
+    }
+
+    private void ParseQueryParameters()
+    {
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        var queryParams = QueryHelpers.ParseQuery(uri.Query);
+
+        if (queryParams.TryGetValue("level", out var levelValue))
+        {
+            IsLevelTwo = levelValue.ToString() == "2";
+            Difficulty = IsLevelTwo ? DifficultyLevel.Full : DifficultyLevel.Major;
+        }
+
+        if (queryParams.TryGetValue("date", out var dateValue))
+        {
+            DateOverride = dateValue.ToString();
+        }
+    }
+
+    private async Task LoadGame()
+    {
+        GameState = await GameService.GetOrCreateGameAsync(GameMode.Name, Difficulty, DateOverride);
+        Stats = await GameService.GetStatsAsync(GameMode.Name, Difficulty);
+
+        var date = DateOverride != null ? DateTime.Parse(DateOverride) : DateTime.UtcNow;
+        PuzzleNumber = DailyPuzzleService.GetPuzzleNumber(date);
+
+        var targetBone = BoneDataService.GetBoneById(GameState.TargetBoneId);
+        TargetBoneName = targetBone?.DisplayName ?? "";
+
+        // Get all hints (but don't reveal them yet)
+        AllHints = GameService.GetAllHints(GameState);
+
+        // Rebuild state from existing guesses
+        GuessResults.Clear();
+        NameGuessResults.Clear();
+        GuessedBoneNames.Clear();
+
+        foreach (var boneId in GameState.Guesses)
+        {
+            var bone = BoneDataService.GetBoneById(boneId);
+            if (bone != null)
+            {
+                var isCorrect = boneId == GameState.TargetBoneId;
+                var heatColor = isCorrect ? "#22c55e" : "#ef4444";
+                GuessResults.Add(new GuessResult(boneId, bone.DisplayName, isCorrect, isCorrect ? 0 : 1, heatColor));
+                GuessedBoneNames.Add(bone.DisplayName);
+
+                // Create name guess result with category comparisons
+                var nameResult = GameService.CreateNameGuessResult(boneId, GameState.TargetBoneId);
+                if (nameResult != null)
+                {
+                    NameGuessResults.Add(nameResult);
+                }
+            }
+        }
+
+        if (GameState.Completed)
+        {
+            ShowResult = true;
+        }
+    }
+
+    private void HandleRevealHint(int newCount)
+    {
+        HintsRevealed = newCount;
+        StateHasChanged();
+    }
+
+    private async Task HandleGuess(string boneName)
+    {
+        if (GameState == null || GameState.Completed)
+            return;
+
+        var result = await GameService.MakeGuessAsync(GameState, boneName);
+
+        if (result.Distance == -1)
+        {
+            // Invalid bone name
+            return;
+        }
+
+        if (result.Distance == -2)
+        {
+            // Already guessed
+            return;
+        }
+
+        // For name mode, we just show correct/incorrect
+        var displayResult = new GuessResult(
+            result.BoneId,
+            result.BoneName,
+            result.IsCorrect,
+            result.IsCorrect ? 0 : 1,
+            result.IsCorrect ? "#22c55e" : "#ef4444"
+        );
+
+        GuessResults.Add(displayResult);
+        GuessedBoneNames.Add(result.BoneName);
+
+        // Create name guess result with category comparisons
+        var nameResult = GameService.CreateNameGuessResult(result.BoneId, GameState.TargetBoneId);
+        if (nameResult != null)
+        {
+            NameGuessResults.Add(nameResult);
+        }
+
+        if (GameState.Completed)
+        {
+            Stats = await GameService.GetStatsAsync(GameMode.Name, Difficulty);
+
+            // If won Level 1, show level up prompt
+            if (GameState.Won && !IsLevelTwo)
+            {
+                ShowLevelUp = true;
+            }
+            else
+            {
+                ShowResult = true;
+            }
+        }
+
+        StateHasChanged();
+    }
+
+    private void StartLevelTwo()
+    {
+        ShowLevelUp = false;
+        var dateParam = DateOverride != null ? $"&date={DateOverride}" : "";
+        Navigation.NavigateTo($"/name?level=2{dateParam}", forceLoad: true);
+    }
+}

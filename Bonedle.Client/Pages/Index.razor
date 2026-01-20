@@ -1,0 +1,81 @@
+@page "/"
+@using Bonedle.Client.Models
+@using Bonedle.Client.Services
+@inject IGameService GameService
+@inject NavigationManager Navigation
+
+<div class="main-menu">
+    <header class="menu-header">
+        <h1 class="title">BONEDLE</h1>
+        <p class="subtitle">The daily bone guessing game</p>
+    </header>
+
+    <div class="mode-selection">
+        <h2>Choose a Mode</h2>
+
+        <div class="mode-cards">
+            <div class="mode-card" @onclick="@(() => PlayMode(GameMode.Location))">
+                <div class="mode-icon">🦴</div>
+                <h3>Location Mode</h3>
+                <p>Find the bone on the skeleton. Guesses light up hot or cold based on distance.</p>
+                <span class="mode-tag">Visual</span>
+            </div>
+
+            <div class="mode-card" @onclick="@(() => PlayMode(GameMode.Name))">
+                <div class="mode-icon">🔤</div>
+                <h3>Name Mode</h3>
+                <p>Guess the bone from progressive hints. Each wrong guess reveals more clues.</p>
+                <span class="mode-tag">Trivia</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="stats-preview">
+        <h3>Your Stats</h3>
+        <div class="stats-row">
+            <div class="stat-box">
+                <span class="stat-value">@LocationStats.CurrentStreak</span>
+                <span class="stat-label">Location Streak</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-value">@NameStats.CurrentStreak</span>
+                <span class="stat-label">Name Streak</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-value">@TotalGames</span>
+                <span class="stat-label">Total Games</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="archive-link">
+        <a href="/archive">
+            <span class="archive-icon">📅</span>
+            Play Previous Dailies
+        </a>
+    </div>
+</div>
+
+@code {
+    private PlayerStats LocationStats { get; set; } = new();
+    private PlayerStats NameStats { get; set; } = new();
+    private int TotalGames => LocationStats.GamesPlayed + NameStats.GamesPlayed +
+                              LocationStatsFull.GamesPlayed + NameStatsFull.GamesPlayed;
+    private PlayerStats LocationStatsFull { get; set; } = new();
+    private PlayerStats NameStatsFull { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        LocationStats = await GameService.GetStatsAsync(GameMode.Location, DifficultyLevel.Major);
+        NameStats = await GameService.GetStatsAsync(GameMode.Name, DifficultyLevel.Major);
+        LocationStatsFull = await GameService.GetStatsAsync(GameMode.Location, DifficultyLevel.Full);
+        NameStatsFull = await GameService.GetStatsAsync(GameMode.Name, DifficultyLevel.Full);
+    }
+
+    private void PlayMode(GameMode mode)
+    {
+        // Always start with Major bones - player will level up to Full after winning
+        var route = mode == GameMode.Location ? "/location" : "/name";
+        Navigation.NavigateTo(route);
+    }
+}

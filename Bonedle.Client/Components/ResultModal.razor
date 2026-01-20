@@ -1,0 +1,191 @@
+@using Bonedle.Client.Models
+@using Bonedle.Client.Services
+@inject IBoneDataService BoneDataService
+
+@if (IsVisible)
+{
+    <div class="modal-overlay" @onclick="Close">
+        <div class="modal-content" @onclick:stopPropagation="true">
+            <button class="modal-close" @onclick="Close">&times;</button>
+
+            @if (Won)
+            {
+                <h2 class="modal-title success">You got it!</h2>
+                <p class="modal-subtitle">
+                    The bone was <strong>@GetBoneName()</strong>
+                </p>
+                <p class="guess-count">Solved in @GuessCount guess@(GuessCount != 1 ? "es" : "")</p>
+            }
+            else
+            {
+                <h2 class="modal-title failure">Better luck next time!</h2>
+                <p class="modal-subtitle">
+                    The bone was <strong>@GetBoneName()</strong>
+                </p>
+            }
+
+            <div class="stats-grid">
+                <div class="stat">
+                    <span class="stat-value">@Stats.GamesPlayed</span>
+                    <span class="stat-label">Played</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">@GetWinPercentage()%</span>
+                    <span class="stat-label">Win %</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">@Stats.CurrentStreak</span>
+                    <span class="stat-label">Streak</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">@Stats.MaxStreak</span>
+                    <span class="stat-label">Max</span>
+                </div>
+            </div>
+
+            @if (Stats.GamesWon > 0)
+            {
+                <div class="distribution">
+                    <h4>Guess Distribution</h4>
+                    @for (int i = 0; i < 10; i++)
+                    {
+                        var count = Stats.GuessDistribution[i];
+                        var maxCount = Stats.GuessDistribution.Max();
+                        var width = maxCount > 0 ? (count * 100 / maxCount) : 0;
+                        var isHighlight = Won && i == GuessCount - 1;
+
+                        <div class="dist-row">
+                            <span class="dist-label">@(i + 1)</span>
+                            <div class="dist-bar-container">
+                                <div class="dist-bar @(isHighlight ? "highlight" : "")"
+                                     style="width: @Math.Max(width, count > 0 ? 5 : 0)%;">
+                                    @if (count > 0)
+                                    {
+                                        <span class="dist-count">@count</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (ShowLevelUp)
+            {
+                <div class="level-up">
+                    <p>You've unlocked <strong>Full Skeleton Mode</strong>!</p>
+                    <button class="level-up-btn" @onclick="OnLevelUp">
+                        Level Up <span class="arrow">→</span>
+                    </button>
+                </div>
+            }
+
+            <button class="share-btn" @onclick="ShareResults">
+                Share Results
+            </button>
+
+            @if (ShowCopied)
+            {
+                <span class="copied-msg">Copied to clipboard!</span>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public bool Won { get; set; }
+    [Parameter] public int GuessCount { get; set; }
+    [Parameter] public string TargetBoneId { get; set; } = "";
+    [Parameter] public PlayerStats Stats { get; set; } = new();
+    [Parameter] public bool ShowLevelUp { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback OnLevelUp { get; set; }
+    [Parameter] public int PuzzleNumber { get; set; }
+    [Parameter] public string ModeName { get; set; } = "";
+    [Parameter] public List<GuessResult> Guesses { get; set; } = new();
+
+    private bool ShowCopied { get; set; }
+
+    private string GetBoneName()
+    {
+        return BoneDataService.GetBoneById(TargetBoneId)?.DisplayName ?? "Unknown";
+    }
+
+    private int GetWinPercentage()
+    {
+        if (Stats.GamesPlayed == 0) return 0;
+        return (int)Math.Round((double)Stats.GamesWon / Stats.GamesPlayed * 100);
+    }
+
+    private async Task Close()
+    {
+        await OnClose.InvokeAsync();
+    }
+
+    private async Task ShareResults()
+    {
+        var result = GenerateShareText();
+
+        try
+        {
+            await CopyToClipboard(result);
+            ShowCopied = true;
+            StateHasChanged();
+
+            await Task.Delay(2000);
+            ShowCopied = false;
+            StateHasChanged();
+        }
+        catch
+        {
+            // Clipboard not available
+        }
+    }
+
+    private string GenerateShareText()
+    {
+        var emoji = Won ? "🦴" : "💀";
+        var scoreText = Won ? $"{GuessCount}/10" : "X/10";
+
+        var lines = new List<string>
+        {
+            $"Bonedle {ModeName} #{PuzzleNumber} {emoji}",
+            scoreText,
+            ""
+        };
+
+        foreach (var guess in Guesses)
+        {
+            lines.Add(GetGuessEmoji(guess));
+        }
+
+        lines.Add("");
+        lines.Add("https://bonedle.com");
+
+        return string.Join("\n", lines);
+    }
+
+    private string GetGuessEmoji(GuessResult guess)
+    {
+        if (guess.IsCorrect) return "🟩";
+        return guess.Distance switch
+        {
+            1 => "🟥",
+            2 => "🟧",
+            3 => "🟨",
+            4 => "🟨",
+            _ => "⬜"
+        };
+    }
+
+    [Inject] private IJSRuntime? JSRuntime { get; set; }
+
+    private async Task CopyToClipboard(string text)
+    {
+        if (JSRuntime != null)
+        {
+            await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
+        }
+    }
+}

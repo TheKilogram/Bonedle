@@ -1,0 +1,50 @@
+@using Bonedle.Client.Models
+
+<div class="guess-history">
+    <h3>Guesses (@Guesses.Count / @MaxGuesses)</h3>
+
+    @if (!Guesses.Any())
+    {
+        <p class="no-guesses">No guesses yet</p>
+    }
+    else
+    {
+        <div class="guesses-list">
+            @foreach (var guess in Guesses.AsEnumerable().Reverse())
+            {
+                <div class="guess-item" style="border-left: 4px solid @guess.HeatColor;">
+                    <span class="guess-name">@guess.BoneName</span>
+                    @if (guess.IsCorrect)
+                    {
+                        <span class="guess-status correct">Correct!</span>
+                    }
+                    else if (guess.Distance > 0 && guess.Distance <= 4)
+                    {
+                        <span class="guess-status warm">@GetDistanceText(guess.Distance)</span>
+                    }
+                    else if (guess.Distance > 4)
+                    {
+                        <span class="guess-status cold">Cold</span>
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public List<GuessResult> Guesses { get; set; } = new();
+    [Parameter] public int MaxGuesses { get; set; } = 10;
+
+    private string GetDistanceText(int distance)
+    {
+        return distance switch
+        {
+            1 => "Very Hot!",
+            2 => "Hot!",
+            3 => "Warm",
+            4 => "Slightly Warm",
+            _ => "Cold"
+        };
+    }
+}
