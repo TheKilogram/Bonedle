@@ -5,7 +5,7 @@ var e=!1;const t=async()=>WebAssembly.validate(new Uint8Array([0,97,115,109,1,0,
   "mainAssemblyName": "Bonedle.Client",
   "applicationEnvironment": "Development",
   "resources": {
-    "hash": "sha256-iJahQBc+0+x6sZA6hIBjfUjWg2eoUN7YBrvcVnfPk5A=",
+    "hash": "sha256-KCbHjmWkCChQGt4AnOXCt7OWev6ymm86OO2Mm3qurlU=",
     "jsModuleNative": [
       {
         "name": "dotnet.native.xanz2e7ksm.js"
@@ -1049,15 +1049,15 @@ var e=!1;const t=async()=>WebAssembly.validate(new Uint8Array([0,97,115,109,1,0,
       },
       {
         "virtualPath": "Bonedle.Client.wasm",
-        "name": "Bonedle.Client.89w019geha.wasm",
-        "integrity": "sha256-tHf0keWX5zvS4KfEz6l0vT/ECpT4lfOm6JFy+SNPHn8="
+        "name": "Bonedle.Client.teuj4wsa13.wasm",
+        "integrity": "sha256-S5s1nbr/GU2QXIKiH0U8ZKa9Iw8mVzHXoXRQhLun6K8="
       }
     ],
     "pdb": [
       {
         "virtualPath": "Bonedle.Client.pdb",
-        "name": "Bonedle.Client.qlcprpusid.pdb",
-        "integrity": "sha256-DuvIzGzakNNCAqTCf7LAecpAJRx/02je/Bc1pwM0Eko="
+        "name": "Bonedle.Client.p2g8evjp9j.pdb",
+        "integrity": "sha256-YR3eZxOyaflkDnHdLNnrY3uhUgye83KlO3xpZy//MqE="
       }
     ],
     "libraryInitializers": [

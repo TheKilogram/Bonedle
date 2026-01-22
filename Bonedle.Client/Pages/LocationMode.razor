@@ -8,15 +8,15 @@
 @inject IDailyPuzzleService DailyPuzzleService
 @inject NavigationManager Navigation
 
-<div class="game-page location-mode @(IsLevelTwo ? "level-two" : "")">
+<div class="game-page location-mode">
     <header class="game-header">
         <a href="/" class="back-btn">← Back</a>
         <div class="header-center">
             <h1>BONEDLE</h1>
             <span class="mode-badge">Location Mode</span>
-            @if (IsLevelTwo)
+            @if (Difficulty == DifficultyLevel.Full)
             {
-                <span class="level-badge">Level 2</span>
+                <span class="difficulty-badge">Expert</span>
             }
         </div>
         <span class="puzzle-number">#@PuzzleNumber</span>
@@ -48,23 +48,6 @@
         </div>
     </div>
 
-    @if (ShowLevelUp && !IsLevelTwo)
-    {
-        <div class="level-up-overlay">
-            <div class="level-up-modal">
-                <h2>Level 1 Complete!</h2>
-                <p>You found the <strong>@TargetBoneName</strong>!</p>
-                <p>Ready for Level 2? The full skeleton has 200+ bones!</p>
-                <button class="level-up-btn" @onclick="StartLevelTwo">
-                    Continue to Level 2 →
-                </button>
-                <button class="skip-btn" @onclick="@(() => ShowLevelUp = false)">
-                    View Results
-                </button>
-            </div>
-        </div>
-    }
-
     <ResultModal IsVisible="@ShowResult"
                  Won="@(GameState?.Won ?? false)"
                  GuessCount="@(GameState?.Guesses.Count ?? 0)"
@@ -74,7 +57,7 @@
                  OnClose="@(() => ShowResult = false)"
                  OnLevelUp="@(() => {})"
                  PuzzleNumber="@PuzzleNumber"
-                 ModeName="@(IsLevelTwo ? "Location (Level 2)" : "Location")"
+                 ModeName="@(Difficulty == DifficultyLevel.Full ? "Location (Expert)" : "Location")"
                  Guesses="@GuessResults" />
 </div>
 
@@ -87,8 +70,6 @@
     private List<string> GuessedBoneNames { get; set; } = new();
     private PlayerStats Stats { get; set; } = new();
     private bool ShowResult { get; set; }
-    private bool ShowLevelUp { get; set; }
-    private bool IsLevelTwo { get; set; }
     private int PuzzleNumber { get; set; }
     private string TargetBoneName { get; set; } = "";
 
@@ -105,8 +86,7 @@
 
         if (queryParams.TryGetValue("level", out var levelValue))
         {
-            IsLevelTwo = levelValue.ToString() == "2";
-            Difficulty = IsLevelTwo ? DifficultyLevel.Full : DifficultyLevel.Major;
+            Difficulty = levelValue.ToString() == "2" ? DifficultyLevel.Full : DifficultyLevel.Major;
         }
 
         if (queryParams.TryGetValue("date", out var dateValue))
@@ -178,25 +158,9 @@
         if (GameState.Completed)
         {
             Stats = await GameService.GetStatsAsync(GameMode.Location, Difficulty);
-
-            // If won Level 1, show level up prompt
-            if (GameState.Won && !IsLevelTwo)
-            {
-                ShowLevelUp = true;
-            }
-            else
-            {
-                ShowResult = true;
-            }
+            ShowResult = true;
         }
 
         StateHasChanged();
-    }
-
-    private void StartLevelTwo()
-    {
-        ShowLevelUp = false;
-        var dateParam = DateOverride != null ? $"&date={DateOverride}" : "";
-        Navigation.NavigateTo($"/location?level=2{dateParam}", forceLoad: true);
     }
 }

@@ -5,26 +5,9 @@
 <div class="skeleton-container @(Difficulty == DifficultyLevel.Full ? "full-mode" : "")">
     <svg viewBox="0 0 200 460" class="skeleton-svg" preserveAspectRatio="xMidYMid meet">
         <defs>
-            <!-- Bone gradient for 3D effect -->
-            <linearGradient id="bone-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" style="stop-color:#5a5a6a"/>
-                <stop offset="30%" style="stop-color:#8a8a9a"/>
-                <stop offset="50%" style="stop-color:#9a9aaa"/>
-                <stop offset="70%" style="stop-color:#8a8a9a"/>
-                <stop offset="100%" style="stop-color:#5a5a6a"/>
-            </linearGradient>
-            <linearGradient id="bone-gradient-v" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" style="stop-color:#7a7a8a"/>
-                <stop offset="50%" style="stop-color:#9a9aaa"/>
-                <stop offset="100%" style="stop-color:#6a6a7a"/>
-            </linearGradient>
-            <!-- Subtle shadow filter -->
-            <filter id="bone-shadow" x="-20%" y="-20%" width="140%" height="140%">
-                <feDropShadow dx="1" dy="1" stdDeviation="1" flood-color="#000" flood-opacity="0.3"/>
-            </filter>
-            <!-- Glow for highlighted bones -->
+            <!-- Simple glow for highlighted bones -->
             <filter id="bone-glow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="3" result="blur"/>
+                <feGaussianBlur stdDeviation="2" result="blur"/>
                 <feMerge>
                     <feMergeNode in="blur"/>
                     <feMergeNode in="SourceGraphic"/>
@@ -35,40 +18,29 @@
         @* === SKULL === *@
         <g class="bone-group @GetBoneClass("skull")" @onclick="@(() => OnBoneClickById("skull"))">
             <!-- Cranium -->
-            <ellipse cx="100" cy="28" rx="32" ry="28"
-                     fill="@GetBoneColor("skull")" stroke="#2a2a3a" stroke-width="1.5" class="bone"/>
-            <!-- Temporal bones suggestion -->
-            <ellipse cx="100" cy="32" rx="30" ry="24"
-                     fill="none" stroke="#3a3a4a" stroke-width="0.5" opacity="0.5"/>
+            <ellipse cx="100" cy="26" rx="30" ry="26"
+                     fill="@GetBoneColor("skull")" stroke="#333" stroke-width="1.2" class="bone"/>
             <!-- Eye sockets -->
-            <ellipse cx="88" cy="32" rx="8" ry="6" fill="#1a1a2e" opacity="0.7"/>
-            <ellipse cx="112" cy="32" rx="8" ry="6" fill="#1a1a2e" opacity="0.7"/>
+            <ellipse cx="90" cy="30" rx="6" ry="5" fill="#000" opacity="0.5"/>
+            <ellipse cx="110" cy="30" rx="6" ry="5" fill="#000" opacity="0.5"/>
             <!-- Nasal cavity -->
-            <path d="M 100 38 L 96 48 L 100 50 L 104 48 Z" fill="#1a1a2e" opacity="0.6"/>
-            <!-- Cheekbones -->
-            <path d="M 72 38 Q 78 42 82 38" fill="none" stroke="#3a3a4a" stroke-width="1" opacity="0.4"/>
-            <path d="M 128 38 Q 122 42 118 38" fill="none" stroke="#3a3a4a" stroke-width="1" opacity="0.4"/>
+            <path d="M 100 36 L 97 42 L 100 44 L 103 42 Z" fill="#000" opacity="0.4"/>
         </g>
 
         @* === MANDIBLE === *@
         <g class="bone-group @GetBoneClass("mandible")" @onclick="@(() => OnBoneClickById("mandible"))">
-            <path d="M 72 48 Q 68 58 72 68 Q 85 72 100 72 Q 115 72 128 68 Q 132 58 128 48 L 122 52 Q 100 58 78 52 Z"
-                  fill="@GetBoneColor("mandible")" stroke="#2a2a3a" stroke-width="1.5" class="bone"/>
-            <!-- Teeth suggestion -->
-            <path d="M 82 58 L 118 58" stroke="#3a3a4a" stroke-width="1" opacity="0.3"/>
+            <path d="M 78 46 Q 75 52 77 58 Q 85 62 100 62 Q 115 62 123 58 Q 125 52 122 46 L 118 48 Q 100 52 82 48 Z"
+                  fill="@GetBoneColor("mandible")" stroke="#333" stroke-width="1.2" class="bone"/>
         </g>
 
         @* === CERVICAL SPINE === *@
         <g class="bone-group @GetBoneClass("cervical-vertebrae")" @onclick="@(() => OnBoneClickById("cervical-vertebrae"))">
             @for (int i = 0; i < 7; i++)
             {
-                var y = 76 + i * 5;
-                var width = 8 + (i * 0.5);
-                <rect x="@(100 - width/2)" y="@y" width="@width" height="4" rx="2"
-                      fill="@GetBoneColor("cervical-vertebrae")" stroke="#2a2a3a" stroke-width="0.8" class="bone"/>
-                <!-- Spinous process -->
-                <rect x="97" y="@(y + 1)" width="6" height="2" rx="1"
-                      fill="@GetBoneColor("cervical-vertebrae")" opacity="0.7"/>
+                var y = 66 + i * 5;
+                var width = 7 + (i * 0.3);
+                <rect x="@(100 - width/2)" y="@y" width="@width" height="4" rx="0.5"
+                      fill="@GetBoneColor("cervical-vertebrae")" stroke="#333" stroke-width="0.8" class="bone"/>
             }
         </g>
 
@@ -85,27 +57,24 @@
         @* === SCAPULAE === *@
         <g class="bone-group @GetBoneClass("scapula-left")" @onclick="@(() => OnBoneClickById("scapula-left"))">
             <path d="M 50 118 Q 42 122 40 135 L 44 160 Q 48 165 55 162 L 58 140 Q 56 125 50 118"
-                  fill="@GetBoneColor("scapula-left")" stroke="#2a2a3a" stroke-width="1" class="bone"/>
-            <!-- Spine of scapula -->
-            <path d="M 44 135 L 55 130" stroke="#3a3a4a" stroke-width="1.5" opacity="0.5"/>
+                  fill="@GetBoneColor("scapula-left")" stroke="#333" stroke-width="1" class="bone"/>
         </g>
         <g class="bone-group @GetBoneClass("scapula-right")" @onclick="@(() => OnBoneClickById("scapula-right"))">
             <path d="M 150 118 Q 158 122 160 135 L 156 160 Q 152 165 145 162 L 142 140 Q 144 125 150 118"
-                  fill="@GetBoneColor("scapula-right")" stroke="#2a2a3a" stroke-width="1" class="bone"/>
-            <path d="M 156 135 L 145 130" stroke="#3a3a4a" stroke-width="1.5" opacity="0.5"/>
+                  fill="@GetBoneColor("scapula-right")" stroke="#333" stroke-width="1" class="bone"/>
         </g>
 
         @* === STERNUM === *@
         <g class="bone-group @GetBoneClass("sternum")" @onclick="@(() => OnBoneClickById("sternum"))">
             <!-- Manubrium -->
             <path d="M 94 114 L 106 114 L 105 128 L 95 128 Z"
-                  fill="@GetBoneColor("sternum")" stroke="#2a2a3a" stroke-width="1" class="bone"/>
+                  fill="@GetBoneColor("sternum")" stroke="#333" stroke-width="1" class="bone"/>
             <!-- Body -->
             <path d="M 95 129 L 105 129 L 104 162 L 96 162 Z"
-                  fill="@GetBoneColor("sternum")" stroke="#2a2a3a" stroke-width="1" class="bone"/>
+                  fill="@GetBoneColor("sternum")" stroke="#333" stroke-width="1" class="bone"/>
             <!-- Xiphoid -->
             <path d="M 98 163 L 102 163 L 100 172 Z"
-                  fill="@GetBoneColor("sternum")" stroke="#2a2a3a" stroke-width="1" class="bone"/>
+                  fill="@GetBoneColor("sternum")" stroke="#333" stroke-width="1" class="bone"/>
         </g>
 
         @* === RIBS LEFT === *@
@@ -113,10 +82,13 @@
             @for (int i = 0; i < 12; i++)
             {
                 var y = 118 + i * 4.5;
+                var backX = 98;
+                var frontX = i < 7 ? 94 : 95; // True ribs connect to sternum
                 var curveX = 45 - (i < 7 ? i * 2 : (12 - i) * 2);
                 var curveY = y + 12;
-                var thickness = i < 3 ? 2.5 : (i < 10 ? 2 : 1.5);
-                <path d="M 94 @y Q @(65) @(y + 5) @curveX @curveY"
+                var thickness = i < 3 ? 2 : (i < 10 ? 1.8 : 1.5);
+                // Create full rib curve from back (spine) to front (sternum or floating)
+                <path d="M @backX @y Q @(65) @(y + 5) @curveX @curveY Q @(70) @(y + 8) @frontX @(y + (i < 7 ? 6 : 10))"
                       fill="none" stroke="@GetBoneColor("ribs-left")" stroke-width="@thickness" stroke-linecap="round" class="bone"/>
             }
         </g>
@@ -126,10 +98,12 @@
             @for (int i = 0; i < 12; i++)
             {
                 var y = 118 + i * 4.5;
+                var backX = 102;
+                var frontX = i < 7 ? 106 : 105;
                 var curveX = 155 + (i < 7 ? i * 2 : (12 - i) * 2);
                 var curveY = y + 12;
-                var thickness = i < 3 ? 2.5 : (i < 10 ? 2 : 1.5);
-                <path d="M 106 @y Q @(135) @(y + 5) @curveX @curveY"
+                var thickness = i < 3 ? 2 : (i < 10 ? 1.8 : 1.5);
+                <path d="M @backX @y Q @(135) @(y + 5) @curveX @curveY Q @(130) @(y + 8) @frontX @(y + (i < 7 ? 6 : 10))"
                       fill="none" stroke="@GetBoneColor("ribs-right")" stroke-width="@thickness" stroke-linecap="round" class="bone"/>
             }
         </g>
@@ -139,8 +113,8 @@
             @for (int i = 0; i < 12; i++)
             {
                 var y = 114 + i * 4.5;
-                <rect x="96" y="@y" width="8" height="3.5" rx="1.5"
-                      fill="@GetBoneColor("thoracic-vertebrae")" stroke="#2a2a3a" stroke-width="0.6" class="bone"/>
+                <rect x="96" y="@y" width="8" height="3.5" rx="0.5"
+                      fill="@GetBoneColor("thoracic-vertebrae")" stroke="#333" stroke-width="0.6" class="bone"/>
             }
         </g>
 
@@ -149,87 +123,86 @@
             @for (int i = 0; i < 5; i++)
             {
                 var y = 172 + i * 7;
-                <rect x="94" y="@y" width="12" height="6" rx="2"
-                      fill="@GetBoneColor("lumbar-vertebrae")" stroke="#2a2a3a" stroke-width="0.8" class="bone"/>
+                <rect x="94" y="@y" width="12" height="6" rx="0.5"
+                      fill="@GetBoneColor("lumbar-vertebrae")" stroke="#333" stroke-width="0.8" class="bone"/>
             }
         </g>
 
         @* === SACRUM === *@
         <g class="bone-group @GetBoneClass("sacrum")" @onclick="@(() => OnBoneClickById("sacrum"))">
             <path d="M 92 208 L 108 208 Q 110 218 108 228 L 100 238 L 92 228 Q 90 218 92 208"
-                  fill="@GetBoneColor("sacrum")" stroke="#2a2a3a" stroke-width="1" class="bone"/>
-            <!-- Sacral foramina suggestion -->
-            <circle cx="96" cy="218" r="1.5" fill="#1a1a2e" opacity="0.3"/>
-            <circle cx="104" cy="218" r="1.5" fill="#1a1a2e" opacity="0.3"/>
-            <circle cx="96" cy="226" r="1.5" fill="#1a1a2e" opacity="0.3"/>
-            <circle cx="104" cy="226" r="1.5" fill="#1a1a2e" opacity="0.3"/>
+                  fill="@GetBoneColor("sacrum")" stroke="#333" stroke-width="1" class="bone"/>
+            <!-- Sacral foramina - 4 pairs positioned along sacrum -->
+            <circle cx="95" cy="213" r="1.2" fill="#000" opacity="0.4"/>
+            <circle cx="105" cy="213" r="1.2" fill="#000" opacity="0.4"/>
+            <circle cx="94.5" cy="219" r="1.2" fill="#000" opacity="0.4"/>
+            <circle cx="105.5" cy="219" r="1.2" fill="#000" opacity="0.4"/>
+            <circle cx="94" cy="225" r="1.2" fill="#000" opacity="0.4"/>
+            <circle cx="106" cy="225" r="1.2" fill="#000" opacity="0.4"/>
+            <circle cx="94.5" cy="231" r="1" fill="#000" opacity="0.4"/>
+            <circle cx="105.5" cy="231" r="1" fill="#000" opacity="0.4"/>
         </g>
 
         @* === COCCYX === *@
         <g class="bone-group @GetBoneClass("coccyx")" @onclick="@(() => OnBoneClickById("coccyx"))">
             <path d="M 97 239 L 103 239 Q 102 248 100 252 Q 98 248 97 239"
-                  fill="@GetBoneColor("coccyx")" stroke="#2a2a3a" stroke-width="0.8" class="bone"/>
+                  fill="@GetBoneColor("coccyx")" stroke="#333" stroke-width="0.8" class="bone"/>
         </g>
 
         @* === HIP BONES === *@
         <g class="bone-group @GetBoneClass("hip-bone-left")" @onclick="@(() => OnBoneClickById("hip-bone-left"))">
             <path d="M 92 210 Q 60 200 48 218 Q 40 240 52 260 Q 68 272 82 262 L 85 248 Q 88 235 92 228"
-                  fill="@GetBoneColor("hip-bone-left")" stroke="#2a2a3a" stroke-width="1.2" class="bone"/>
+                  fill="@GetBoneColor("hip-bone-left")" stroke="#333" stroke-width="1.2" class="bone"/>
             <!-- Acetabulum -->
-            <circle cx="68" cy="255" r="10" fill="#1a1a2e" opacity="0.4"/>
-            <circle cx="68" cy="255" r="6" fill="@GetBoneColor("hip-bone-left")" opacity="0.3"/>
-            <!-- Iliac crest detail -->
-            <path d="M 52 218 Q 65 208 80 212" fill="none" stroke="#3a3a4a" stroke-width="1" opacity="0.4"/>
+            <circle cx="68" cy="255" r="8" fill="none" stroke="#333" stroke-width="1.2"/>
         </g>
         <g class="bone-group @GetBoneClass("hip-bone-right")" @onclick="@(() => OnBoneClickById("hip-bone-right"))">
             <path d="M 108 210 Q 140 200 152 218 Q 160 240 148 260 Q 132 272 118 262 L 115 248 Q 112 235 108 228"
-                  fill="@GetBoneColor("hip-bone-right")" stroke="#2a2a3a" stroke-width="1.2" class="bone"/>
-            <circle cx="132" cy="255" r="10" fill="#1a1a2e" opacity="0.4"/>
-            <circle cx="132" cy="255" r="6" fill="@GetBoneColor("hip-bone-right")" opacity="0.3"/>
-            <path d="M 148 218 Q 135 208 120 212" fill="none" stroke="#3a3a4a" stroke-width="1" opacity="0.4"/>
+                  fill="@GetBoneColor("hip-bone-right")" stroke="#333" stroke-width="1.2" class="bone"/>
+            <circle cx="132" cy="255" r="8" fill="none" stroke="#333" stroke-width="1.2"/>
         </g>
 
         @* === LEFT ARM === *@
         <g class="bone-group @GetBoneClass("humerus-left")" @onclick="@(() => OnBoneClickById("humerus-left"))">
             <!-- Humeral head -->
-            <circle cx="48" cy="120" r="8" fill="@GetBoneColor("humerus-left")" stroke="#2a2a3a" stroke-width="1" class="bone"/>
+            <circle cx="48" cy="120" r="8" fill="@GetBoneColor("humerus-left")" stroke="#333" stroke-width="1" class="bone"/>
             <!-- Shaft -->
             <path d="M 44 126 Q 40 130 36 160 L 32 185 Q 30 192 36 195 L 44 192 L 46 165 Q 48 135 48 126"
-                  fill="@GetBoneColor("humerus-left")" stroke="#2a2a3a" stroke-width="1" class="bone"/>
+                  fill="@GetBoneColor("humerus-left")" stroke="#333" stroke-width="1" class="bone"/>
         </g>
         <g class="bone-group @GetBoneClass("radius-left")" @onclick="@(() => OnBoneClickById("radius-left"))">
             <path d="M 38 198 Q 36 202 30 235 L 28 255 Q 26 260 30 262 L 36 260 L 40 235 Q 42 205 40 198"
-                  fill="@GetBoneColor("radius-left")" stroke="#2a2a3a" stroke-width="1" class="bone"/>
+                  fill="@GetBoneColor("radius-left")" stroke="#333" stroke-width="1" class="bone"/>
         </g>
         <g class="bone-group @GetBoneClass("ulna-left")" @onclick="@(() => OnBoneClickById("ulna-left"))">
             <!-- Olecranon -->
             <path d="M 34 194 Q 30 190 28 194 L 26 198"
-                  fill="@GetBoneColor("ulna-left")" stroke="#2a2a3a" stroke-width="1" class="bone"/>
+                  fill="@GetBoneColor("ulna-left")" stroke="#333" stroke-width="1" class="bone"/>
             <path d="M 28 198 L 22 255 Q 20 262 26 264 L 32 260 L 36 205 Q 34 198 32 196"
-                  fill="@GetBoneColor("ulna-left")" stroke="#2a2a3a" stroke-width="1" class="bone"/>
+                  fill="@GetBoneColor("ulna-left")" stroke="#333" stroke-width="1" class="bone"/>
         </g>
 
         @* === RIGHT ARM === *@
         <g class="bone-group @GetBoneClass("humerus-right")" @onclick="@(() => OnBoneClickById("humerus-right"))">
-            <circle cx="152" cy="120" r="8" fill="@GetBoneColor("humerus-right")" stroke="#2a2a3a" stroke-width="1" class="bone"/>
+            <circle cx="152" cy="120" r="8" fill="@GetBoneColor("humerus-right")" stroke="#333" stroke-width="1" class="bone"/>
             <path d="M 156 126 Q 160 130 164 160 L 168 185 Q 170 192 164 195 L 156 192 L 154 165 Q 152 135 152 126"
-                  fill="@GetBoneColor("humerus-right")" stroke="#2a2a3a" stroke-width="1" class="bone"/>
+                  fill="@GetBoneColor("humerus-right")" stroke="#333" stroke-width="1" class="bone"/>
         </g>
         <g class="bone-group @GetBoneClass("radius-right")" @onclick="@(() => OnBoneClickById("radius-right"))">
             <path d="M 162 198 Q 164 202 170 235 L 172 255 Q 174 260 170 262 L 164 260 L 160 235 Q 158 205 160 198"
-                  fill="@GetBoneColor("radius-right")" stroke="#2a2a3a" stroke-width="1" class="bone"/>
+                  fill="@GetBoneColor("radius-right")" stroke="#333" stroke-width="1" class="bone"/>
         </g>
         <g class="bone-group @GetBoneClass("ulna-right")" @onclick="@(() => OnBoneClickById("ulna-right"))">
             <path d="M 166 194 Q 170 190 172 194 L 174 198"
-                  fill="@GetBoneColor("ulna-right")" stroke="#2a2a3a" stroke-width="1" class="bone"/>
+                  fill="@GetBoneColor("ulna-right")" stroke="#333" stroke-width="1" class="bone"/>
             <path d="M 172 198 L 178 255 Q 180 262 174 264 L 168 260 L 164 205 Q 166 198 168 196"
-                  fill="@GetBoneColor("ulna-right")" stroke="#2a2a3a" stroke-width="1" class="bone"/>
+                  fill="@GetBoneColor("ulna-right")" stroke="#333" stroke-width="1" class="bone"/>
         </g>
 
         @* === LEFT HAND (fanned out from wrist) === *@
         <g class="bone-group @GetBoneClass("carpals-left")" @onclick="@(() => OnBoneClickById("carpals-left"))">
             <rect x="22" y="262" width="12" height="8" rx="2"
-                  fill="@GetBoneColor("carpals-left")" stroke="#2a2a3a" stroke-width="0.8" class="bone"/>
+                  fill="@GetBoneColor("carpals-left")" stroke="#333" stroke-width="0.8" class="bone"/>
         </g>
         <g class="bone-group @GetBoneClass("metacarpals-left")" @onclick="@(() => OnBoneClickById("metacarpals-left"))">
             @{
@@ -270,7 +243,7 @@
         @* === RIGHT HAND (fanned out from wrist) === *@
         <g class="bone-group @GetBoneClass("carpals-right")" @onclick="@(() => OnBoneClickById("carpals-right"))">
             <rect x="166" y="262" width="12" height="8" rx="2"
-                  fill="@GetBoneColor("carpals-right")" stroke="#2a2a3a" stroke-width="0.8" class="bone"/>
+                  fill="@GetBoneColor("carpals-right")" stroke="#333" stroke-width="0.8" class="bone"/>
         </g>
         <g class="bone-group @GetBoneClass("metacarpals-right")" @onclick="@(() => OnBoneClickById("metacarpals-right"))">
             @{
@@ -306,18 +279,18 @@
         @* === LEFT LEG === *@
         <g class="bone-group @GetBoneClass("femur-left")" @onclick="@(() => OnBoneClickById("femur-left"))">
             <!-- Femoral head -->
-            <circle cx="68" cy="258" r="7" fill="@GetBoneColor("femur-left")" stroke="#2a2a3a" stroke-width="1" class="bone"/>
+            <circle cx="68" cy="258" r="7" fill="@GetBoneColor("femur-left")" stroke="#333" stroke-width="1" class="bone"/>
             <!-- Femoral neck and shaft -->
             <path d="M 68 265 Q 72 275 74 290 L 76 330 Q 78 342 72 345 L 80 345 Q 86 342 84 330 L 82 290 Q 80 270 74 262"
-                  fill="@GetBoneColor("femur-left")" stroke="#2a2a3a" stroke-width="1" class="bone"/>
+                  fill="@GetBoneColor("femur-left")" stroke="#333" stroke-width="1" class="bone"/>
         </g>
         <g class="bone-group @GetBoneClass("patella-left")" @onclick="@(() => OnBoneClickById("patella-left"))">
             <ellipse cx="78" cy="352" rx="6" ry="8"
-                     fill="@GetBoneColor("patella-left")" stroke="#2a2a3a" stroke-width="0.8" class="bone"/>
+                     fill="@GetBoneColor("patella-left")" stroke="#333" stroke-width="0.8" class="bone"/>
         </g>
         <g class="bone-group @GetBoneClass("tibia-left")" @onclick="@(() => OnBoneClickById("tibia-left"))">
             <path d="M 72 362 Q 70 365 72 375 L 70 405 Q 68 412 74 415 L 82 412 L 84 375 Q 86 365 82 362"
-                  fill="@GetBoneColor("tibia-left")" stroke="#2a2a3a" stroke-width="1" class="bone"/>
+                  fill="@GetBoneColor("tibia-left")" stroke="#333" stroke-width="1" class="bone"/>
         </g>
         <g class="bone-group @GetBoneClass("fibula-left")" @onclick="@(() => OnBoneClickById("fibula-left"))">
             <path d="M 88 364 L 90 405 Q 92 412 88 414 L 84 412"
@@ -326,17 +299,17 @@
 
         @* === RIGHT LEG === *@
         <g class="bone-group @GetBoneClass("femur-right")" @onclick="@(() => OnBoneClickById("femur-right"))">
-            <circle cx="132" cy="258" r="7" fill="@GetBoneColor("femur-right")" stroke="#2a2a3a" stroke-width="1" class="bone"/>
+            <circle cx="132" cy="258" r="7" fill="@GetBoneColor("femur-right")" stroke="#333" stroke-width="1" class="bone"/>
             <path d="M 132 265 Q 128 275 126 290 L 124 330 Q 122 342 128 345 L 120 345 Q 114 342 116 330 L 118 290 Q 120 270 126 262"
-                  fill="@GetBoneColor("femur-right")" stroke="#2a2a3a" stroke-width="1" class="bone"/>
+                  fill="@GetBoneColor("femur-right")" stroke="#333" stroke-width="1" class="bone"/>
         </g>
         <g class="bone-group @GetBoneClass("patella-right")" @onclick="@(() => OnBoneClickById("patella-right"))">
             <ellipse cx="122" cy="352" rx="6" ry="8"
-                     fill="@GetBoneColor("patella-right")" stroke="#2a2a3a" stroke-width="0.8" class="bone"/>
+                     fill="@GetBoneColor("patella-right")" stroke="#333" stroke-width="0.8" class="bone"/>
         </g>
         <g class="bone-group @GetBoneClass("tibia-right")" @onclick="@(() => OnBoneClickById("tibia-right"))">
             <path d="M 128 362 Q 130 365 128 375 L 130 405 Q 132 412 126 415 L 118 412 L 116 375 Q 114 365 118 362"
-                  fill="@GetBoneColor("tibia-right")" stroke="#2a2a3a" stroke-width="1" class="bone"/>
+                  fill="@GetBoneColor("tibia-right")" stroke="#333" stroke-width="1" class="bone"/>
         </g>
         <g class="bone-group @GetBoneClass("fibula-right")" @onclick="@(() => OnBoneClickById("fibula-right"))">
             <path d="M 112 364 L 110 405 Q 108 412 112 414 L 116 412"
@@ -346,7 +319,7 @@
         @* === LEFT FOOT === *@
         <g class="bone-group @GetBoneClass("tarsals-left")" @onclick="@(() => OnBoneClickById("tarsals-left"))">
             <path d="M 68 416 Q 62 416 60 420 L 58 428 Q 60 432 68 432 L 90 432 Q 94 430 92 426 L 90 420 Q 88 416 82 416 Z"
-                  fill="@GetBoneColor("tarsals-left")" stroke="#2a2a3a" stroke-width="0.8" class="bone"/>
+                  fill="@GetBoneColor("tarsals-left")" stroke="#333" stroke-width="0.8" class="bone"/>
         </g>
         <g class="bone-group @GetBoneClass("metatarsals-left")" @onclick="@(() => OnBoneClickById("metatarsals-left"))">
             @for (int i = 0; i < 5; i++)
@@ -362,14 +335,14 @@
                 var x = 56 + i * 7;
                 var size = i == 0 ? 3 : 2.5;
                 <ellipse cx="@x" cy="450" rx="@size" ry="4"
-                         fill="@GetBoneColor("phalanges-foot-left")" stroke="#2a2a3a" stroke-width="0.5" class="bone"/>
+                         fill="@GetBoneColor("phalanges-foot-left")" stroke="#333" stroke-width="0.5" class="bone"/>
             }
         </g>
 
         @* === RIGHT FOOT === *@
         <g class="bone-group @GetBoneClass("tarsals-right")" @onclick="@(() => OnBoneClickById("tarsals-right"))">
             <path d="M 132 416 Q 138 416 140 420 L 142 428 Q 140 432 132 432 L 110 432 Q 106 430 108 426 L 110 420 Q 112 416 118 416 Z"
-                  fill="@GetBoneColor("tarsals-right")" stroke="#2a2a3a" stroke-width="0.8" class="bone"/>
+                  fill="@GetBoneColor("tarsals-right")" stroke="#333" stroke-width="0.8" class="bone"/>
         </g>
         <g class="bone-group @GetBoneClass("metatarsals-right")" @onclick="@(() => OnBoneClickById("metatarsals-right"))">
             @for (int i = 0; i < 5; i++)
@@ -385,27 +358,56 @@
                 var x = 144 - i * 7;
                 var size = i == 0 ? 3 : 2.5;
                 <ellipse cx="@x" cy="450" rx="@size" ry="4"
-                         fill="@GetBoneColor("phalanges-foot-right")" stroke="#2a2a3a" stroke-width="0.5" class="bone"/>
+                         fill="@GetBoneColor("phalanges-foot-right")" stroke="#333" stroke-width="0.5" class="bone"/>
             }
         </g>
 
         @* === FULL MODE ADDITIONAL BONES (Only shown in Level 2) === *@
         @if (Difficulty == DifficultyLevel.Full)
         {
+            @* Head bones - positioned on skull *@
             @foreach (var bone in GetAdditionalBones("head"))
             {
+                var cx = 100 + (bone.SvgX - 50) * 0.6; // Center around skull at x=100
+                var cy = 26 + (bone.SvgY - 5) * 3;     // Center around skull at y=26
                 <g class="bone-group bone-marker @GetBoneClass(bone.Id)" @onclick="@(() => OnBoneClickById(bone.Id))">
-                    <circle cx="@(bone.SvgX * 2)" cy="@(bone.SvgY * 4.2)" r="3"
+                    <circle cx="@cx" cy="@cy" r="2.5"
                             fill="@GetBoneColor(bone.Id)" stroke="#555" stroke-width="0.5" class="bone"/>
                 </g>
             }
 
+            @* Individual vertebrae *@
             @foreach (var bone in GetAdditionalBones("spine"))
             {
-                <g class="bone-group bone-marker @GetBoneClass(bone.Id)" @onclick="@(() => OnBoneClickById(bone.Id))">
-                    <rect x="@(bone.SvgX * 2 - 2)" y="@(bone.SvgY * 4.2 - 1)" width="4" height="2" rx="0.5"
-                          fill="@GetBoneColor(bone.Id)" stroke="#555" stroke-width="0.3" class="bone"/>
-                </g>
+                double cy = 0;
+                // Position based on vertebra type
+                if (bone.Id.Contains("cervical"))
+                {
+                    var num = int.Parse(bone.Id.Split('-')[1].Replace("c", ""));
+                    cy = 66 + (num - 1) * 5 + 2; // Center on cervical vertebrae
+                }
+                else if (bone.Id.Contains("thoracic"))
+                {
+                    var num = int.Parse(bone.Id.Split('-')[1].Replace("t", ""));
+                    cy = 114 + (num - 1) * 4.5 + 1.75; // Center on thoracic vertebrae
+                }
+                else if (bone.Id.Contains("lumbar"))
+                {
+                    var num = int.Parse(bone.Id.Split('-')[1].Replace("l", ""));
+                    cy = 172 + (num - 1) * 7 + 3; // Center on lumbar vertebrae
+                }
+                else if (bone.Id == "atlas" || bone.Id == "axis")
+                {
+                    cy = bone.Id == "atlas" ? 68 : 73;
+                }
+
+                @if (cy > 0)
+                {
+                    <g class="bone-group bone-marker @GetBoneClass(bone.Id)" @onclick="@(() => OnBoneClickById(bone.Id))">
+                        <rect x="98" y="@(cy - 1)" width="4" height="2" rx="0.5"
+                              fill="@GetBoneColor(bone.Id)" stroke="#555" stroke-width="0.3" class="bone"/>
+                    </g>
+                }
             }
 
             @foreach (var bone in GetAdditionalBones("torso").Where(b => b.Id.StartsWith("rib-")))
@@ -420,46 +422,183 @@
                 </g>
             }
 
+            @* Sternum parts *@
             @foreach (var bone in GetAdditionalBones("torso").Where(b => b.Id.Contains("sternum") || b.Id == "manubrium" || b.Id == "xiphoid-process"))
             {
+                double cy = bone.Id == "manubrium" ? 121 : (bone.Id == "xiphoid-process" ? 167 : 143);
                 <g class="bone-group bone-marker @GetBoneClass(bone.Id)" @onclick="@(() => OnBoneClickById(bone.Id))">
-                    <circle cx="100" cy="@(bone.SvgY * 4.2)" r="2.5"
+                    <circle cx="100" cy="@cy" r="2.5"
                             fill="@GetBoneColor(bone.Id)" stroke="#555" stroke-width="0.3" class="bone"/>
                 </g>
             }
 
-            @foreach (var bone in GetAdditionalBones("hand").Where(b => !b.Id.Contains("metacarpal") || b.Id.Contains("metacarpal-")))
+            @* Hand bones - individual carpals, metacarpals, phalanges *@
+            @foreach (var bone in GetAdditionalBones("hand"))
             {
                 var isLeft = bone.Id.Contains("left");
-                var baseX = isLeft ? 28 : 172;
-                var offsetX = (bone.SvgX - (isLeft ? 20 : 80)) * 0.8;
-                var y = bone.SvgY * 4.2;
-                <g class="bone-group bone-marker @GetBoneClass(bone.Id)" @onclick="@(() => OnBoneClickById(bone.Id))">
-                    <circle cx="@(baseX + offsetX)" cy="@y" r="2"
-                            fill="@GetBoneColor(bone.Id)" stroke="#555" stroke-width="0.3" class="bone"/>
-                </g>
+                double cx = 0, cy = 0;
+
+                // Transform from bone data coordinate space (0-100) to skeleton SVG space (0-200 width, 0-460 height)
+                // Left hand center: x=28, Right hand center: x=172
+                // Hand bones are around y=54-67 in data space, need to map to y=266-295 in SVG space
+
+                // Individual carpal bones (8 per hand) - at wrist
+                if (bone.Id.Contains("scaphoid") || bone.Id.Contains("lunate") || bone.Id.Contains("triquetrum") || bone.Id.Contains("pisiform") ||
+                    bone.Id.Contains("trapezium") || bone.Id.Contains("trapezoid") || bone.Id.Contains("capitate") || bone.Id.Contains("hamate"))
+                {
+                    if (isLeft)
+                    {
+                        // Left carpals: map SvgX 19-24 to spread around x=20-36
+                        cx = 12 + (bone.SvgX - 19) * 4.8;
+                        cy = 266 + (bone.SvgY - 54) * 2;
+                    }
+                    else
+                    {
+                        // Right carpals: map SvgX 76-83 to spread around x=164-180
+                        cx = 164 + (bone.SvgX - 76) * 2.3;
+                        cy = 266 + (bone.SvgY - 54) * 2;
+                    }
+                }
+                // Individual metacarpal bones (5 per hand) - palm
+                else if (bone.Id.StartsWith("metacarpal-"))
+                {
+                    if (isLeft)
+                    {
+                        // Left metacarpals: map SvgX 17-22 to spread across palm
+                        cx = 10 + (bone.SvgX - 17) * 5.2;
+                        cy = 275 + (bone.SvgY - 56) * 2.5;
+                    }
+                    else
+                    {
+                        // Right metacarpals: map SvgX 78-83 to spread across palm
+                        cx = 162 + (bone.SvgX - 78) * 5.2;
+                        cy = 275 + (bone.SvgY - 56) * 2.5;
+                    }
+                }
+                // Individual phalanges - fingers
+                else if (bone.Id.Contains("phalanx") || bone.Id.Contains("distal") || bone.Id.Contains("middle"))
+                {
+                    if (isLeft)
+                    {
+                        // Left phalanges: spread across fingers
+                        cx = 8 + (bone.SvgX - 15) * 5.4;
+                        cy = 285 + (bone.SvgY - 60) * 3;
+                    }
+                    else
+                    {
+                        // Right phalanges: spread across fingers
+                        cx = 160 + (bone.SvgX - 79) * 5.4;
+                        cy = 285 + (bone.SvgY - 60) * 3;
+                    }
+                }
+
+                @if (cx > 0 && cy > 0)
+                {
+                    <g class="bone-group bone-marker @GetBoneClass(bone.Id)" @onclick="@(() => OnBoneClickById(bone.Id))">
+                        <circle cx="@cx" cy="@cy" r="1.5"
+                                fill="@GetBoneColor(bone.Id)" stroke="#555" stroke-width="0.3" class="bone"/>
+                    </g>
+                }
             }
 
-            @foreach (var bone in GetAdditionalBones("foot").Where(b => !b.Id.Contains("metatarsal") || b.Id.Contains("metatarsal-")))
+            @* Foot bones - individual tarsals, metatarsals, phalanges *@
+            @foreach (var bone in GetAdditionalBones("foot"))
             {
                 var isLeft = bone.Id.Contains("left");
-                var baseX = isLeft ? 75 : 125;
-                var offsetX = (bone.SvgX - 50) * 0.5;
-                var y = bone.SvgY * 4.2;
-                <g class="bone-group bone-marker @GetBoneClass(bone.Id)" @onclick="@(() => OnBoneClickById(bone.Id))">
-                    <circle cx="@(baseX + offsetX)" cy="@y" r="2"
-                            fill="@GetBoneColor(bone.Id)" stroke="#555" stroke-width="0.3" class="bone"/>
-                </g>
+                double cx = 0, cy = 0;
+
+                // Transform from bone data coordinate space to skeleton SVG space
+                // Left foot center: x=75, y=424, Right foot center: x=125, y=424
+                // Foot bones are around y=91-99 in data space, need to map to y=410-445 in SVG space
+
+                // Individual tarsal bones (7 per foot) - calcaneus, talus, navicular, cuboid, cuneiforms
+                if (bone.Id.Contains("calcaneus") || bone.Id.Contains("talus") || bone.Id.Contains("navicular") ||
+                    bone.Id.Contains("cuboid") || bone.Id.Contains("cuneiform"))
+                {
+                    if (isLeft)
+                    {
+                        // Left tarsals: map SvgX 39-44 to spread around heel/ankle
+                        cx = 65 + (bone.SvgX - 39) * 3.5;
+                        cy = 410 + (bone.SvgY - 91) * 3.5;
+                    }
+                    else
+                    {
+                        // Right tarsals: map SvgX 56-61 to spread around heel/ankle
+                        cx = 115 + (bone.SvgX - 56) * 3.5;
+                        cy = 410 + (bone.SvgY - 91) * 3.5;
+                    }
+                }
+                // Individual metatarsal bones (5 per foot) - metatarsal-1-left, etc.
+                else if (bone.Id.StartsWith("metatarsal-"))
+                {
+                    if (isLeft)
+                    {
+                        // Left metatarsals: spread across mid-foot
+                        cx = 63 + (bone.SvgX - 38) * 3.8;
+                        cy = 425 + (bone.SvgY - 93) * 3.5;
+                    }
+                    else
+                    {
+                        // Right metatarsals: spread across mid-foot
+                        cx = 113 + (bone.SvgX - 58) * 3.8;
+                        cy = 425 + (bone.SvgY - 93) * 3.5;
+                    }
+                }
+                // Individual toe phalanges
+                else if (bone.Id.Contains("phalanx") || bone.Id.Contains("toe"))
+                {
+                    if (isLeft)
+                    {
+                        // Left toe phalanges: spread across toes
+                        cx = 61 + (bone.SvgX - 37) * 4;
+                        cy = 436 + (bone.SvgY - 96) * 3.5;
+                    }
+                    else
+                    {
+                        // Right toe phalanges: spread across toes
+                        cx = 111 + (bone.SvgX - 59) * 4;
+                        cy = 436 + (bone.SvgY - 96) * 3.5;
+                    }
+                }
+
+                @if (cx > 0 && cy > 0)
+                {
+                    <g class="bone-group bone-marker @GetBoneClass(bone.Id)" @onclick="@(() => OnBoneClickById(bone.Id))">
+                        <circle cx="@cx" cy="@cy" r="1.5"
+                                fill="@GetBoneColor(bone.Id)" stroke="#555" stroke-width="0.3" class="bone"/>
+                    </g>
+                }
             }
 
+            @* Pelvis bones - ilium, ischium, pubis *@
             @foreach (var bone in GetAdditionalBones("pelvis"))
             {
                 var isLeft = bone.Id.Contains("left");
-                var baseX = isLeft ? 60 : 140;
-                <g class="bone-group bone-marker @GetBoneClass(bone.Id)" @onclick="@(() => OnBoneClickById(bone.Id))">
-                    <circle cx="@baseX" cy="@(bone.SvgY * 4.2)" r="3"
-                            fill="@GetBoneColor(bone.Id)" stroke="#555" stroke-width="0.3" class="bone"/>
-                </g>
+                double cx = 0, cy = 0;
+
+                if (bone.Id.Contains("ilium"))
+                {
+                    cx = isLeft ? 55 : 145;
+                    cy = 220;
+                }
+                else if (bone.Id.Contains("ischium"))
+                {
+                    cx = isLeft ? 60 : 140;
+                    cy = 250;
+                }
+                else if (bone.Id.Contains("pubis"))
+                {
+                    cx = isLeft ? 75 : 125;
+                    cy = 240;
+                }
+
+                @if (cx > 0 && cy > 0)
+                {
+                    <g class="bone-group bone-marker @GetBoneClass(bone.Id)" @onclick="@(() => OnBoneClickById(bone.Id))">
+                        <circle cx="@cx" cy="@cy" r="2.5"
+                                fill="@GetBoneColor(bone.Id)" stroke="#555" stroke-width="0.3" class="bone"/>
+                    </g>
+                }
             }
         }
     </svg>
@@ -484,7 +623,7 @@
     {
         if (BoneColors.TryGetValue(boneId, out var color))
             return color;
-        return "#5a5a6a"; // Default bone color - more natural grey
+        return "#E8DCC8"; // Default bone color - clean bone white/cream
     }
 
     private string GetBoneClass(string boneId)

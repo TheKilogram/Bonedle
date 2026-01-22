@@ -14,18 +14,32 @@
         <h2>Choose a Mode</h2>
 
         <div class="mode-cards">
-            <div class="mode-card" @onclick="@(() => PlayMode(GameMode.Location))">
+            <div class="mode-card" @onclick="@(() => PlayMode(GameMode.Location, DifficultyLevel.Major))">
                 <div class="mode-icon">🦴</div>
                 <h3>Location Mode</h3>
                 <p>Find the bone on the skeleton. Guesses light up hot or cold based on distance.</p>
-                <span class="mode-tag">Visual</span>
+                <span class="mode-tag">~50 Bones</span>
             </div>
 
-            <div class="mode-card" @onclick="@(() => PlayMode(GameMode.Name))">
+            <div class="mode-card" @onclick="@(() => PlayMode(GameMode.Location, DifficultyLevel.Full))">
+                <div class="mode-icon">🦴</div>
+                <h3>Location Mode (Expert)</h3>
+                <p>The full skeleton with all individual bones. For anatomy experts!</p>
+                <span class="mode-tag">200+ Bones</span>
+            </div>
+
+            <div class="mode-card" @onclick="@(() => PlayMode(GameMode.Name, DifficultyLevel.Major))">
                 <div class="mode-icon">🔤</div>
                 <h3>Name Mode</h3>
                 <p>Guess the bone from progressive hints. Each wrong guess reveals more clues.</p>
-                <span class="mode-tag">Trivia</span>
+                <span class="mode-tag">~50 Bones</span>
+            </div>
+
+            <div class="mode-card" @onclick="@(() => PlayMode(GameMode.Name, DifficultyLevel.Full))">
+                <div class="mode-icon">🔤</div>
+                <h3>Name Mode (Expert)</h3>
+                <p>Identify bones from the full skeleton using progressive hints.</p>
+                <span class="mode-tag">200+ Bones</span>
             </div>
         </div>
     </div>
@@ -72,10 +86,10 @@
         NameStatsFull = await GameService.GetStatsAsync(GameMode.Name, DifficultyLevel.Full);
     }
 
-    private void PlayMode(GameMode mode)
+    private void PlayMode(GameMode mode, DifficultyLevel difficulty)
     {
-        // Always start with Major bones - player will level up to Full after winning
         var route = mode == GameMode.Location ? "/location" : "/name";
-        Navigation.NavigateTo(route);
+        var levelParam = difficulty == DifficultyLevel.Full ? "?level=2" : "";
+        Navigation.NavigateTo($"{route}{levelParam}");
     }
 }
