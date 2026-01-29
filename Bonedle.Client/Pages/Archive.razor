@@ -172,7 +172,7 @@
         if (isFuture || isBeforeLaunch)
             return;
 
-        var route = SelectedMode == GameMode.Location ? "/location" : "/name";
+        var route = SelectedMode == GameMode.Location ? "location" : "name";
         var diffParam = SelectedDifficulty == DifficultyLevel.Full ? "full" : "major";
         Navigation.NavigateTo($"{route}?difficulty={diffParam}&date={dateStr}");
     }

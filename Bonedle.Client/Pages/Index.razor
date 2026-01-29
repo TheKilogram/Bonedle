@@ -88,7 +88,7 @@
 
     private void PlayMode(GameMode mode, DifficultyLevel difficulty)
     {
-        var route = mode == GameMode.Location ? "/location" : "/name";
+        var route = mode == GameMode.Location ? "location" : "name";
         var levelParam = difficulty == DifficultyLevel.Full ? "?level=2" : "";
         Navigation.NavigateTo($"{route}{levelParam}");
     }
