@@ -25,12 +25,7 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-
-      - name: Restore dependencies
-        run: dotnet restore Bonedle.Client/Bonedle.Client.csproj
-
-      - name: Build
-        run: dotnet build Bonedle.Client/Bonedle.Client.csproj -c Release --no-restore
+          include-prerelease: true
 
       - name: Publish
         run: dotnet publish Bonedle.Client/Bonedle.Client.csproj -c Release -o release --nologo
